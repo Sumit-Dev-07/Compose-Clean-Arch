@@ -1,4 +1,4 @@
-package com.app.compose.ui.view
+package com.app.compose.ui.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box

@@ -1,4 +1,4 @@
-package com.app.compose
+package com.app.compose.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,11 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.NavHost
 import com.app.compose.ui.nav.AppNavHost
 import com.app.compose.ui.theme.ComposeCleanArchTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,8 +20,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ComposeCleanArchTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Surface(modifier = Modifier.padding(innerPadding)) {
+                Scaffold(modifier = Modifier.Companion.fillMaxSize()) { innerPadding ->
+                    Surface(modifier = Modifier.Companion.padding(innerPadding)) {
                         AppNavHost()
                     }
                 }
