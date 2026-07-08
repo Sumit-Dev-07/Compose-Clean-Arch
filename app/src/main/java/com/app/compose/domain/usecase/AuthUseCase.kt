@@ -1,6 +1,6 @@
 package com.app.compose.domain.usecase
 
-import com.app.compose.data.remote.model.login.LoginReq
+import com.app.compose.data.remote.model.login.LoginRequest
 import com.app.compose.data.remote.model.login.LoginResponse
 import com.app.compose.domain.repository.AuthRepository
 import com.app.compose.util.ApiState
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class AuthUseCase @Inject constructor(private val authRepository: AuthRepository) {
-    suspend fun login(loginReq: LoginReq): Flow<UiState<LoginResponse>> {
+    suspend fun login(loginReq: LoginRequest): Flow<UiState<LoginResponse>> {
         return authRepository.login(loginReq).map { result ->
             when (result) {
                 is ApiState.Success -> UiState.Success(result.data)

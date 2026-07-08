@@ -2,7 +2,7 @@ package com.app.compose.data.remote.model.login
 
 import com.google.gson.annotations.SerializedName
 
-data class LoginReq(
+data class LoginRequest(
     @SerializedName("username")
     val username: String,
     @SerializedName("password")

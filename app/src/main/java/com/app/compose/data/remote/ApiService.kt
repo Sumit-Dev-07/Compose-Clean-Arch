@@ -1,6 +1,6 @@
 package com.app.compose.data.remote
 
-import com.app.compose.data.remote.model.login.LoginReq
+import com.app.compose.data.remote.model.login.LoginRequest
 import com.app.compose.data.remote.model.login.LoginResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -10,7 +10,7 @@ interface ApiService {
 
     @POST(ApiPath.LOGIN)
     suspend fun login(
-        @Body request: LoginReq
+        @Body request: LoginRequest
     ): Response<LoginResponse>
 
 }

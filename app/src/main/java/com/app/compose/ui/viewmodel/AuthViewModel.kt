@@ -2,7 +2,7 @@ package com.app.compose.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.compose.data.remote.model.login.LoginReq
+import com.app.compose.data.remote.model.login.LoginRequest
 import com.app.compose.data.remote.model.login.LoginResponse
 import com.app.compose.domain.usecase.AuthUseCase
 import com.app.compose.util.UiState
@@ -32,7 +32,7 @@ class AuthViewModel @Inject constructor(
         else -> null
     }
 
-    fun login(loginReq: LoginReq) {
+    fun login(loginReq: LoginRequest) {
         viewModelScope.launch {
             authUseCase.login(loginReq)
                 .onStart { _loginState.value = UiState.Loading }

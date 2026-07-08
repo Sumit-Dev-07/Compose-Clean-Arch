@@ -1,7 +1,7 @@
 package com.app.compose.domain.repository
 
 import com.app.compose.data.datasource.AuthDataSource
-import com.app.compose.data.remote.model.login.LoginReq
+import com.app.compose.data.remote.model.login.LoginRequest
 import com.app.compose.data.remote.model.login.LoginResponse
 import com.app.compose.util.ApiState
 import com.app.compose.util.DispatchersProvider
@@ -15,7 +15,7 @@ class AuthRepositoryImpl @Inject constructor(
     private val authDataSource: AuthDataSource,
     private val dispatchersProvider: DispatchersProvider
 ) : AuthRepository {
-    override suspend fun login(loginReq: LoginReq): Flow<ApiState<LoginResponse>> {
+    override suspend fun login(loginReq: LoginRequest): Flow<ApiState<LoginResponse>> {
         return flow {
             val result = safeApiCall { authDataSource.login(loginReq) }
             emit(result)

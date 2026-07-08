@@ -38,7 +38,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.app.compose.data.remote.model.login.LoginReq
+import com.app.compose.data.remote.model.login.LoginRequest
 import com.app.compose.ui.components.AppTextField
 import com.app.compose.ui.theme.ButtonColor
 import com.app.compose.ui.viewmodel.AuthViewModel
@@ -114,7 +114,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
             AppTextField(
                 value = password,
                 onValueChange = { newValue ->
@@ -156,7 +155,7 @@ fun LoginScreen(
 
                     if ((usernameError == null) && (passwordError == null)) {
                         focusManager.clearFocus()
-                        val request = LoginReq(username.trim(), password.trim())
+                        val request = LoginRequest(username.trim(), password.trim())
                         viewModel.login(request)
                     }
                 },

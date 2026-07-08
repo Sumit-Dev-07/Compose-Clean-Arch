@@ -54,6 +54,7 @@ private fun parseErrorBody(errorBodyString: String?): String? {
     return try {
         Gson().fromJson(errorBodyString, ErrorResponse::class.java)?.message
     } catch (e: Exception) {
+        e.printStackTrace()
         null
     }
 }
