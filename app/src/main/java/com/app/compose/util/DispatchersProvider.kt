@@ -1,7 +1,3 @@
-/**
- * Copyright (c) 2025 Samad Talukder. All rights reserved.
- * github.com/samadtalukder
- **/
 package com.app.compose.util
 
 import kotlinx.coroutines.CoroutineDispatcher
@@ -23,5 +19,4 @@ class DefaultDispatcherProvider @Inject constructor() : DispatchersProvider {
     override fun main(): CoroutineDispatcher = Dispatchers.Main
 
     override fun unconfined(): CoroutineDispatcher = Dispatchers.Unconfined
-
 }

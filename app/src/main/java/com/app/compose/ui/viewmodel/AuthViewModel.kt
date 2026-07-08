@@ -22,6 +22,16 @@ class AuthViewModel @Inject constructor(
     private val _loginState = MutableStateFlow<UiState<LoginResponse>>(UiState.Idle)
     val loginState: StateFlow<UiState<LoginResponse>> = _loginState.asStateFlow()
 
+    fun validateUsername(username: String): String? = when {
+        username.isBlank() -> "Username cannot be empty"
+        else -> null
+    }
+
+    fun validatePassword(password: String): String? = when {
+        password.isBlank() -> "Password cannot be empty"
+        else -> null
+    }
+
     fun login(loginReq: LoginReq) {
         viewModelScope.launch {
             authUseCase.login(loginReq)

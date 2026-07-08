@@ -1,5 +1,6 @@
 package com.app.compose.util
 
+import com.google.gson.Gson
 import okio.IOException
 import retrofit2.Response
 import java.net.SocketTimeoutException
@@ -23,13 +24,16 @@ suspend fun <T> safeApiCall(
 
     } else {
         val errorCode = response.code()
-        val errorMessage = when (errorCode) {
+        val serverMessage = parseErrorBody(response.errorBody()?.string())
+
+        val errorMessage = serverMessage ?: when (errorCode) {
+            401 -> "Invalid credentials"
             404 -> "User Not Found"
             500 -> "Internal server error. Please try again later."
             502 -> "Bad gateway. Please try again later."
             503 -> "Service unavailable. Please try again later."
             504 -> "Gateway timeout. Please try again later."
-            else -> "Error: ${response.code()} ${response.message()}"
+            else -> "Error: $errorCode ${response.message()}"
         }
 
         ApiState.Error(errorMessage, errorCode)
@@ -41,6 +45,17 @@ suspend fun <T> safeApiCall(
     apiError(io.message ?: "No Internet")
 } catch (sc: SocketTimeoutException) {
     apiError(sc.message ?: "Timeout")
+}
+
+private data class ErrorResponse(val message: String? = null)
+
+private fun parseErrorBody(errorBodyString: String?): String? {
+    if (errorBodyString.isNullOrBlank()) return null
+    return try {
+        Gson().fromJson(errorBodyString, ErrorResponse::class.java)?.message
+    } catch (e: Exception) {
+        null
+    }
 }
 
 fun <T> apiError(errorMessage: String): ApiState<T> = ApiState.Error(errorMessage)

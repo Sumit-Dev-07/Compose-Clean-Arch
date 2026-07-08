@@ -1,6 +1,8 @@
 package com.app.compose.ui.features.auth
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,11 +12,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.LocalRippleConfiguration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -27,28 +32,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.compose.data.remote.model.login.LoginReq
-import com.app.compose.ui.theme.ButtonColor
 import com.app.compose.ui.components.AppTextField
+import com.app.compose.ui.theme.ButtonColor
 import com.app.compose.ui.viewmodel.AuthViewModel
 import com.app.compose.util.UiState
 
-private fun validateUsername(username: String): String? = when {
-    username.isBlank() -> "Username cannot be empty"
-    // !username.matches(Regex("^[0-9]{10}$")) -> "Enter a valid username" // Commented out to be more generic for testing if needed
-    else -> null
-}
-
-private fun validatePassword(password: String): String? = when {
-    password.isBlank() -> "Password cannot be empty"
-    password.length < 4 -> "Password must be at least 4 characters"
-    else -> null
-}
 
 @Composable
 fun LoginScreen(
@@ -56,26 +51,44 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit = {},
 ) {
 
-    var username by remember {
-        mutableStateOf("")
-    }
+    var username by remember { mutableStateOf("") }
     var usernameError by remember { mutableStateOf<String?>(null) }
 
-    var password by remember {
-        mutableStateOf("")
-    }
+    var password by remember { mutableStateOf("") }
     var passwordError by remember { mutableStateOf<String?>(null) }
-    var passwordVisible by remember { mutableStateOf(value = false) }
+    var passwordVisible by remember { mutableStateOf(value = true) }
+
+    val snackBarHostState = remember { SnackbarHostState() }
 
     val uiState by viewModel.loginState.collectAsStateWithLifecycle()
-
     LaunchedEffect(uiState) {
         if (uiState is UiState.Success) {
             onLoginSuccess()
         }
+        when (uiState) {
+            is UiState.Success -> onLoginSuccess()
+            is UiState.Error -> {
+                val message = (uiState as UiState.Error).message
+                snackBarHostState.showSnackbar(message)
+            }
+            else -> Unit
+        }
     }
 
-    Box(modifier = Modifier.background(color = Color.White)) {
+    val focusManager = LocalFocusManager.current
+    val interactionSource = remember { MutableInteractionSource() }
+
+    Box(
+        modifier = Modifier
+            .background(color = Color.White)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) {
+                focusManager.clearFocus()
+            }
+            .imePadding()
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -89,7 +102,7 @@ fun LoginScreen(
                 value = username,
                 onValueChange = { newValue ->
                     username = newValue
-                    usernameError = validateUsername(newValue)
+                    usernameError = viewModel.validateUsername(newValue)
                 },
                 label = "Enter username",
                 keyboardType = KeyboardType.Text,
@@ -101,11 +114,12 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+
             AppTextField(
                 value = password,
                 onValueChange = { newValue ->
                     password = newValue
-                    passwordError = validatePassword(newValue)
+                    passwordError = viewModel.validatePassword(newValue)
                 },
                 label = "Enter password",
                 keyboardType = KeyboardType.Password,
@@ -137,11 +151,13 @@ fun LoginScreen(
 
             Button(
                 onClick = {
-                    usernameError = validateUsername(username)
-                    passwordError = validatePassword(password)
+                    usernameError = viewModel.validateUsername(username)
+                    passwordError = viewModel.validatePassword(password)
 
                     if ((usernameError == null) && (passwordError == null)) {
-                        viewModel.login(LoginReq(username, password))
+                        focusManager.clearFocus()
+                        val request = LoginReq(username.trim(), password.trim())
+                        viewModel.login(request)
                     }
                 },
                 enabled = uiState !is UiState.Loading,
@@ -174,6 +190,13 @@ fun LoginScreen(
 
             }
         }
+
+        SnackbarHost(
+            hostState = snackBarHostState,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+        )
+
     }
 
 }
