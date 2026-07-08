@@ -50,5 +50,5 @@ app/src/main/java/com/app/compose/
 ## 📝 License
 
 ```text
-Copyright 2024 Compose Clean Arch.
+Copyright 2026 Compose Clean Arch.
 ```
