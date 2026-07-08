@@ -5,7 +5,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.app.compose.ui.features.main.MainScreen
+import com.app.compose.ui.features.main.LoginScreen
+import com.app.compose.ui.features.splash.SplashScreen
 
 @Composable
 fun AppNavHost(
@@ -14,10 +15,17 @@ fun AppNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = AppScreen.Main.route
+        startDestination = AppScreen.Splash.route
     ) {
+        composable(AppScreen.Splash.route) {
+            SplashScreen(onNavigateToMain = {
+                navController.navigate(AppScreen.Main.route) {
+                    popUpTo(AppScreen.Splash.route) { inclusive = true }
+                }
+            })
+        }
         composable(AppScreen.Main.route) {
-            MainScreen()
+            LoginScreen()
         }
     }
 }
