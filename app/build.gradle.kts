@@ -68,4 +68,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
 
+    // Coroutines
+    implementation(libs.coroutines.core)
+    implementation(libs.coroutines.android)
+
 }
