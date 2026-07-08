@@ -19,16 +19,16 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val authUseCase: AuthUseCase
 ) : ViewModel() {
-    private val _userState = MutableStateFlow<UiState<LoginResponse>>(UiState.Loading)
-    val userState: StateFlow<UiState<LoginResponse>> = _userState.asStateFlow()
+    private val _loginState = MutableStateFlow<UiState<LoginResponse>>(UiState.Idle)
+    val loginState: StateFlow<UiState<LoginResponse>> = _loginState.asStateFlow()
 
     fun login(loginReq: LoginReq) {
         viewModelScope.launch {
             authUseCase.login(loginReq)
-                .onStart { _userState.value = UiState.Loading }
-                .catch { error -> _userState.value = UiState.Error("${error.localizedMessage}") }
+                .onStart { _loginState.value = UiState.Loading }
+                .catch { error -> _loginState.value = UiState.Error("${error.localizedMessage}") }
                 .collect { result ->
-                    _userState.value = result
+                    _loginState.value = result
                 }
         }
     }

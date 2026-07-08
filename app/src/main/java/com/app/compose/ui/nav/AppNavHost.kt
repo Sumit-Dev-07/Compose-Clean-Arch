@@ -5,27 +5,34 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.app.compose.ui.features.main.LoginScreen
+import com.app.compose.ui.features.auth.LoginScreen
+import com.app.compose.ui.features.home.HomeScreen
 import com.app.compose.ui.features.splash.SplashScreen
 
 @Composable
 fun AppNavHost(
     navController: NavHostController = rememberNavController()
 ) {
-
     NavHost(
         navController = navController,
         startDestination = AppScreen.Splash.route
     ) {
         composable(AppScreen.Splash.route) {
             SplashScreen(onNavigateToMain = {
-                navController.navigate(AppScreen.Main.route) {
+                navController.navigate(AppScreen.Login.route) {
                     popUpTo(AppScreen.Splash.route) { inclusive = true }
                 }
             })
         }
-        composable(AppScreen.Main.route) {
-            LoginScreen()
+        composable(AppScreen.Login.route) {
+            LoginScreen(onLoginSuccess = {
+                navController.navigate(AppScreen.Home.route) {
+                    popUpTo(AppScreen.Login.route) { inclusive = true }
+                }
+            })
+        }
+        composable(AppScreen.Home.route) {
+            HomeScreen()
         }
     }
 }
