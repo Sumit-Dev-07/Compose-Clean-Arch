@@ -20,8 +20,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ComposeCleanArchTheme {
-                Scaffold(modifier = Modifier.Companion.fillMaxSize()) { innerPadding ->
-                    Surface(modifier = Modifier.Companion.padding(innerPadding)) {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Surface(modifier = Modifier.padding(innerPadding)) {
                         AppNavHost()
                     }
                 }
