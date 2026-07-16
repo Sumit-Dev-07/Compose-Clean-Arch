@@ -17,13 +17,12 @@ fun Int.selectedIcon(itemIndex: Int): Int {
     }
 }
 
-@Composable
-fun DashboardScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(text = "Dashboard Screen")
+fun Int.appBarTitle(): String {
+    return when (this) {
+        0 -> "Home"
+        1 -> "Product"
+        2 -> "Profile"
+        else -> ""
     }
 }
 

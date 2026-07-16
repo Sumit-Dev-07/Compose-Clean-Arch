@@ -11,4 +11,8 @@ class ProductDataSourceImpl @Inject constructor(
     override suspend fun getProducts(limit: Int, skip: Int): Response<ProductResponse> {
         return apiService.getProducts(limit, skip)
     }
+
+    override suspend fun getProductsByCategory(category: String): Response<ProductResponse> {
+        return apiService.getProductsByCategory(category)
+    }
 }

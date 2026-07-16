@@ -21,4 +21,12 @@ class ProductRepositoryImpl @Inject constructor(
             emit(result)
         }.flowOn(dispatchersProvider.io())
     }
+
+    override suspend fun getProductsByCategory(category: String): Flow<ApiState<ProductResponse>> {
+        return flow {
+            emit(ApiState.Loading)
+            val result = safeApiCall { productDataSource.getProductsByCategory(category) }
+            emit(result)
+        }.flowOn(dispatchersProvider.io())
+    }
 }

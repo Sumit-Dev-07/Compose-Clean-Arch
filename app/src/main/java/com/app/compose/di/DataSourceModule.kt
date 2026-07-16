@@ -2,6 +2,8 @@ package com.app.compose.di
 
 import com.app.compose.data.datasource.AuthDataSource
 import com.app.compose.data.datasource.AuthDataSourceImpl
+import com.app.compose.data.datasource.CategoryDataSource
+import com.app.compose.data.datasource.CategoryDataSourceImpl
 import com.app.compose.data.datasource.ProductDataSource
 import com.app.compose.data.datasource.ProductDataSourceImpl
 import dagger.Binds
@@ -21,4 +23,8 @@ abstract class DataSourceModule {
     @Singleton
     @Binds
     abstract fun bindProductDataSource(impl: ProductDataSourceImpl): ProductDataSource
+
+    @Singleton
+    @Binds
+    abstract fun bindCategoryDataSource(impl: CategoryDataSourceImpl): CategoryDataSource
 }

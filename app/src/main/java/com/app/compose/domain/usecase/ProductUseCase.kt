@@ -18,4 +18,14 @@ class ProductUseCase @Inject constructor(private val productRepository: ProductR
             }
         }
     }
+
+    suspend fun getProductsByCategory(category: String): Flow<UiState<ProductResponse>> {
+        return productRepository.getProductsByCategory(category).map { result ->
+            when (result) {
+                is ApiState.Loading -> UiState.Loading
+                is ApiState.Success -> UiState.Success(result.data)
+                is ApiState.Error -> UiState.Error(result.message)
+            }
+        }
+    }
 }
