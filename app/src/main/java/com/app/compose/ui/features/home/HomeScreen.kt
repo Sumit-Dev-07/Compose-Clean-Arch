@@ -1,7 +1,10 @@
 package com.app.compose.ui.features.home
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -17,10 +20,10 @@ import androidx.navigation.compose.rememberNavController
 import com.PratikFagadiya.smoothanimationbottombar.model.SmoothAnimationBottomBarScreens
 import com.PratikFagadiya.smoothanimationbottombar.properties.BottomBarProperties
 import com.PratikFagadiya.smoothanimationbottombar.ui.SmoothAnimationBottomBar
-import com.app.compose.R
 import com.app.compose.ui.features.home.screen.DashboardScreen
+import com.app.compose.ui.features.home.screen.ProductScreen
 import com.app.compose.ui.features.home.screen.ProfileScreen
-import com.app.compose.ui.features.home.screen.SearchScreen
+import com.app.compose.ui.features.home.screen.selectedIcon
 import com.app.compose.ui.theme.Grey70
 import com.app.compose.ui.theme.PrimaryColor
 import com.app.compose.ui.theme.WhiteColor
@@ -31,6 +34,7 @@ fun HomeScreenPreview() {
     HomeScreen()
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavHostController = rememberNavController()) {
     val selectedIndex = remember { mutableIntStateOf(0) }
@@ -38,17 +42,17 @@ fun HomeScreen(navController: NavHostController = rememberNavController()) {
         SmoothAnimationBottomBarScreens(
             route = "home",
             name = "Home",
-            icon = if (selectedIndex.intValue == 0) R.drawable.active_home else R.drawable.home
+            icon = selectedIndex.intValue.selectedIcon(0)
         ),
         SmoothAnimationBottomBarScreens(
-            route = "search",
+            route = "product",
             name = "Product",
-            icon = if (selectedIndex.intValue == 1) R.drawable.active_product else R.drawable.product
+            icon = selectedIndex.intValue.selectedIcon(1)
         ),
         SmoothAnimationBottomBarScreens(
             route = "profile",
             name = "Profile",
-            icon = R.drawable.active_profile
+            icon = selectedIndex.intValue.selectedIcon(2)
         ),
     )
 
@@ -86,7 +90,7 @@ fun HomeScreen(navController: NavHostController = rememberNavController()) {
             modifier = Modifier.padding(paddingValues)
         ) {
             composable("home") { DashboardScreen() }
-            composable("search") { SearchScreen() }
+            composable("product") { ProductScreen() }
             composable("profile") { ProfileScreen() }
         }
     }

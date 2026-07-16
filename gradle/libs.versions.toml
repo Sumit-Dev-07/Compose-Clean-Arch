@@ -19,6 +19,8 @@ okhttp = "5.4.0"
 
 coroutines = "1.11.0"
 smoothBottomNav = "1.1.2"
+coil = "2.7.0"
+foundationLayout = "1.11.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -52,6 +54,8 @@ logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-intercep
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 smooth-bottom-nav = { module = "com.github.PratikFagadiya:AnimatedSmoothBottomNavigation-JetpackCompose", version.ref = "smoothBottomNav" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 
 
 [plugins]
