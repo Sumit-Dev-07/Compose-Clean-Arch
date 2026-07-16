@@ -73,4 +73,5 @@ dependencies {
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
 
+    implementation(libs.smooth.bottom.nav)
 }

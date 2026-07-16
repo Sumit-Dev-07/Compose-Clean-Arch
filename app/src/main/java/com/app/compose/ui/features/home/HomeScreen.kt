@@ -1,29 +1,29 @@
 package com.app.compose.ui.features.home
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.PratikFagadiya.smoothanimationbottombar.model.SmoothAnimationBottomBarScreens
+import com.PratikFagadiya.smoothanimationbottombar.properties.BottomBarProperties
+import com.PratikFagadiya.smoothanimationbottombar.ui.SmoothAnimationBottomBar
+import com.app.compose.R
 import com.app.compose.ui.features.home.screen.DashboardScreen
 import com.app.compose.ui.features.home.screen.ProfileScreen
 import com.app.compose.ui.features.home.screen.SearchScreen
+import com.app.compose.ui.theme.Grey70
+import com.app.compose.ui.theme.PrimaryColor
+import com.app.compose.ui.theme.WhiteColor
 
 @Preview(showBackground = true)
 @Composable
@@ -31,50 +31,63 @@ fun HomeScreenPreview() {
     HomeScreen()
 }
 
-sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
-    data object Home : Screen("home", "Home", Icons.Default.Home)
-    data object Search : Screen("search", "Search", Icons.Default.Search)
-    data object Profile : Screen("profile", "Profile", Icons.Default.Person)
-}
-
 @Composable
 fun HomeScreen(navController: NavHostController = rememberNavController()) {
-    val items = listOf(Screen.Home, Screen.Search, Screen.Profile)
+    val selectedIndex = remember { mutableIntStateOf(0) }
+    val items = listOf(
+        SmoothAnimationBottomBarScreens(
+            route = "home",
+            name = "Home",
+            icon = if (selectedIndex.intValue == 0) R.drawable.active_home else R.drawable.home
+        ),
+        SmoothAnimationBottomBarScreens(
+            route = "search",
+            name = "Product",
+            icon = if (selectedIndex.intValue == 1) R.drawable.active_product else R.drawable.product
+        ),
+        SmoothAnimationBottomBarScreens(
+            route = "profile",
+            name = "Profile",
+            icon = R.drawable.active_profile
+        ),
+    )
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentRoute = navBackStackEntry?.destination?.route
-
-                items.forEach { screen ->
-                    NavigationBarItem(
-                        icon = { Icon(screen.icon, contentDescription = screen.title) },
-                        label = { Text(screen.title) },
-                        selected = currentRoute == screen.route,
-                        onClick = {
-                            navController.navigate(screen.route) {
-                                // Avoid multiple copies of same destination on back stack
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
+            SmoothAnimationBottomBar(
+                navController = navController,
+                bottomNavigationItems = items,
+                initialIndex = selectedIndex,
+                bottomBarProperties = BottomBarProperties(
+                    backgroundColor = WhiteColor,
+                    indicatorColor = PrimaryColor.copy(alpha = 0.2F),
+                    iconTintActiveColor = PrimaryColor,
+                    iconTintColor = Grey70,
+                    textActiveColor = PrimaryColor,
+                    cornerRadius = 18.dp,
+                    fontSize = 16.sp,
+                ),
+                onSelectItem = {
+                    selectedIndex.intValue = items.indexOf(it)
+                    navController.navigate(it.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
                         }
-                    )
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 }
-            }
+            )
         }
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Home.route,
+            startDestination = "home",
             modifier = Modifier.padding(paddingValues)
         ) {
-            composable(Screen.Home.route) { DashboardScreen() }
-            composable(Screen.Search.route) { SearchScreen() }
-            composable(Screen.Profile.route) { ProfileScreen() }
+            composable("home") { DashboardScreen() }
+            composable("search") { SearchScreen() }
+            composable("profile") { ProfileScreen() }
         }
     }
 }

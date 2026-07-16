@@ -18,6 +18,7 @@ retrofit = "3.0.0"
 okhttp = "5.4.0"
 
 coroutines = "1.11.0"
+smoothBottomNav = "1.1.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,6 +51,7 @@ logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-intercep
 # Coroutines
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+smooth-bottom-nav = { module = "com.github.PratikFagadiya:AnimatedSmoothBottomNavigation-JetpackCompose", version.ref = "smoothBottomNav" }
 
 
 [plugins]
