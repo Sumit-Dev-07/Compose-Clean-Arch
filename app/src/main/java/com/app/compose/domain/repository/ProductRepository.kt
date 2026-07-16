@@ -5,5 +5,5 @@ import com.app.compose.util.ApiState
 import kotlinx.coroutines.flow.Flow
 
 interface ProductRepository {
-    suspend fun getProducts(): Flow<ApiState<ProductResponse>>
+    suspend fun getProducts(limit: Int, skip: Int): Flow<ApiState<ProductResponse>>
 }

@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class ProductUseCase @Inject constructor(private val productRepository: ProductRepository) {
-    suspend fun getProducts(): Flow<UiState<ProductResponse>> {
-        return productRepository.getProducts().map { result ->
+    suspend fun getProducts(limit: Int, skip: Int): Flow<UiState<ProductResponse>> {
+        return productRepository.getProducts(limit, skip).map { result ->
             when (result) {
                 is ApiState.Loading -> UiState.Loading
                 is ApiState.Success -> UiState.Success(result.data)

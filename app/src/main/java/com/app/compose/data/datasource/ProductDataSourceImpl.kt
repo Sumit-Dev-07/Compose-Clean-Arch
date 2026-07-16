@@ -8,7 +8,7 @@ import javax.inject.Inject
 class ProductDataSourceImpl @Inject constructor(
     private val apiService: ApiService
 ) : ProductDataSource {
-    override suspend fun getProducts(): Response<ProductResponse> {
-        return apiService.getProducts()
+    override suspend fun getProducts(limit: Int, skip: Int): Response<ProductResponse> {
+        return apiService.getProducts(limit, skip)
     }
 }

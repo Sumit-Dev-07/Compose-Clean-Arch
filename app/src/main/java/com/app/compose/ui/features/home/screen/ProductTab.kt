@@ -1,7 +1,6 @@
 package com.app.compose.ui.features.home.screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,19 +12,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,41 +44,91 @@ import com.app.compose.ui.theme.WhiteColor
 import com.app.compose.ui.viewmodel.ProductViewModel
 import com.app.compose.util.UiState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductScreen(viewModel: ProductViewModel = hiltViewModel()) {
     val uiState by viewModel.productState.collectAsStateWithLifecycle()
+    var isRefreshing by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        viewModel.getProducts()
+    LaunchedEffect(uiState) {
+        if (uiState !is UiState.Loading) {
+            isRefreshing = false
+        }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    var lastProducts by remember { mutableStateOf<List<Product>?>(null) }
+    if (uiState is UiState.Success) {
+        lastProducts = (uiState as UiState.Success).data.products
+    }
+
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = {
+            isRefreshing = true
+            viewModel.getProducts(isRefresh = true)
+        },
+        modifier = Modifier.fillMaxSize()
+    ) {
         when (uiState) {
             is UiState.Loading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-
-            is UiState.Success -> {
-                val products = (uiState as UiState.Success).data.products
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 16.dp)
-                ) {
-                    items(products) { product ->
-                        ProductItem(product)
+                if (!isRefreshing) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                } else {
+                    lastProducts?.let { products ->
+                        ProductList(products) { viewModel.getProducts() }
                     }
                 }
             }
 
+            is UiState.Success -> {
+                ProductList((uiState as UiState.Success).data.products) {
+                    viewModel.getProducts()
+                }
+            }
+
             is UiState.Error -> {
-                Text(
-                    text = (uiState as UiState.Error).message,
-                    modifier = Modifier.align(Alignment.Center),
-                    color = MaterialTheme.colorScheme.error
-                )
+                if (isRefreshing && lastProducts != null) {
+                    ProductList(lastProducts!!) { viewModel.getProducts() }
+                } else {
+                    Text(
+                        text = (uiState as UiState.Error).message,
+                        modifier = Modifier.align(Alignment.Center),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             }
 
             else -> Unit
+        }
+    }
+}
+
+@Composable
+fun ProductList(products: List<Product>, onLoadMore: () -> Unit) {
+    val listState = rememberLazyListState()
+
+    val shouldLoadMore = remember {
+        derivedStateOf {
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
+                ?: return@derivedStateOf false
+
+            lastVisibleItem.index >= listState.layoutInfo.totalItemsCount - 2
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore.value) {
+        if (shouldLoadMore.value) {
+            onLoadMore()
+        }
+    }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        state = listState,
+        contentPadding = PaddingValues(horizontal = 16.dp)
+    ) {
+        items(products) { product ->
+            ProductItem(product)
         }
     }
 }

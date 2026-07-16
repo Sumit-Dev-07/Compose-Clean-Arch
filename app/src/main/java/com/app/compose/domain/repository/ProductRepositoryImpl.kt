@@ -14,10 +14,10 @@ class ProductRepositoryImpl @Inject constructor(
     private val productDataSource: ProductDataSource,
     private val dispatchersProvider: DispatchersProvider
 ) : ProductRepository {
-    override suspend fun getProducts(): Flow<ApiState<ProductResponse>> {
+    override suspend fun getProducts(limit: Int, skip: Int): Flow<ApiState<ProductResponse>> {
         return flow {
             emit(ApiState.Loading)
-            val result = safeApiCall { productDataSource.getProducts() }
+            val result = safeApiCall { productDataSource.getProducts(limit, skip) }
             emit(result)
         }.flowOn(dispatchersProvider.io())
     }
